@@ -1,24 +1,31 @@
 var express = require('express');
+var fortune = require("./fortune");
 
 var app = express();
 
 app.set('port', process.env.PORT || 3001);
 
-var fortunes = [
-	"conquer your fears or they will conquer you.",
-	"rivers need springs.",
-	"Do not fear what you don't know.",
-	"You will have a pleasant surprise.",
-	"Whenever possible, keep it simple.",
-];
+app.use(function(req, res, next){
+	res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
+	next();
+});
+
+// routes go here.
+
+app.get('/tours/hood-river', function(req, res){
+        res.render('tours/hood-river');
+});
+app.get('/tours/request-group-rate', function(req, res){
+	res.render('tours/request-group-rate');
+});
  
 app.get('/', function(req, res) {
 	res.render('home');
 });
-app.get('/about', function(req, res){
-	var randomFortune =
-	fortunes[Math.floor(Math.random() * fortunes.length)];	
-	res.render('about', {fortune: randomFortune });
+app.get('/about', function(req, res){	
+	res.render('about', { fortune: fortune.getFortune(),
+	pageTestScript: '/qa/tests-about.js'
+});
 });
 app.get('/datetime', function(req, res) {
 	res.render('datetime');
